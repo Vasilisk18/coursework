@@ -6,13 +6,13 @@
 #include <vector>
 
 int main() {
-  int N = 90;
-  int T = 80;
+  int N = 100;
+  int T = 100;
   int series = 50;
   std::vector<double> medium(T * 3, 0.0);
   //for (int i = 0; i < series; i++) {
-  //  AgentModel3 A(N, 30, 30, 30, T,
-  //    0.1, 0.2, 0.1, 0.3, 0.2);
+  //  AgentModel3 A(N, 5, 5, 90, T,
+  //    1, 0.02, 0.02, 0.03, 0.05);
   //  A.Execution();
 
   //  std::vector<int> curres = A.OutResult();
@@ -35,13 +35,13 @@ int main() {
   //    << std::endl;
   //}
 
-  CompModel3 C(N, 30, 30, 30, T, 0.01, 0.2, 0.1, 0.3, 0.2);
-  C.rungeKutta(0.01);
+  CompModel3 C(N, 5, 5, 90, T, 0.2, 0.1, 0.02, 0.03, 0.05);
+  C.rungeKutta(0.1);
   C.Print();
+  C.SaveToExcel("resultComp.csv");
 
   //std::ofstream fout("resultAgent.csv");
   //fout << "z;y;v\n";
-
   //for (int i = 0; i < T; i++) {
   //  fout << medium[i * 3] << ";"
   //       << medium[i * 3 + 1] << ";"

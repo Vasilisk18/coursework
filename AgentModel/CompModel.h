@@ -1,5 +1,5 @@
 #pragma once
-
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -14,10 +14,10 @@ class CompModel3 {
 
 public:
   CompModel3() {
-    N = 90;
-    z0 = 30;
-    y0 = 30.0;
-    T = 100;
+    N = 1;
+    z0 = 0;
+    y0 = 0.0;
+    T = 1;
     c = r = p = s = q = 0.0;
 
     result.resize(T * 3);
@@ -52,8 +52,17 @@ public:
 
     std::vector<double> dz(2, 0.0);
 
-    dz[0] = c * z * z * v - r * z - p * z * y - s * z;
-    dz[1] = c * y * z * v + r * z + p * z * y - q * v * y - s * y;
+    dz[0] = c * z * z * v / (N * N)
+      - r * z
+      - p * z * y / N
+      - s * z;
+
+    dz[1] = c * y * z * v / (N * N)
+      + r * z
+      + p * z * y / N
+      - q * v * y / N
+      - s * y;
+
 
     return dz;
   }
@@ -84,14 +93,6 @@ public:
       if (z_next[i] < 0.0)
         z_next[i] = 0.0;
     }
-
-    // enforce invariant: z + y <= N
-    double sum = z_next[0] + z_next[1];
-    if (sum > N) {
-      z_next[0] *= N / sum;
-      z_next[1] *= N / sum;
-    }
-
     return z_next;
   }
 
@@ -123,6 +124,19 @@ public:
         << std::setw(5) << result[i * 3 + 1]
         << std::setw(5) << result[i * 3 + 2] << std::endl;
     }
+  }
+  void SaveToExcel(const std::string& filename) const {
+    std::ofstream file(filename);
+    file << "z;y;v\n";
+
+    for (int t = 0; t < T; ++t) {
+      file 
+        << result[t * 3] << ";"
+        << result[t * 3 + 1] << ";"
+        << result[t * 3 + 2] << "\n";
+    }
+
+    file.close();
   }
 
   std::vector<int> OutResult() const {
