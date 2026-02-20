@@ -42,48 +42,37 @@ public:
       int cy = result[(t - 1) * 3 + 1];
       int cv = N - cz - cy;
 
-      double z = (double)cz / N;
-      double y = (double)cy / N;
-      double v = (double)cv / N;
+      double z = (double)cz;
+      double y = (double)cy;
+      double v = (double)cv ;
 
       for (int i = 0; i < N; ++i) {
         double u = U(gen);
+        bool changed = false;
 
-        // ---------- спонтанные переходы ----------
-        if (agents[i] == 0) {              // Z
-          if (u < r * dt) { agents[i] = 1; continue; }
-          if (u < (r + s) * dt) { agents[i] = 2; continue; }
+        // 1. —понтанные переходы
+        if (agents[i] == 0) {
+          if (u < r * dt) { agents[i] = 1; changed = true; }
+          else if (u < (r + s) * dt) { agents[i] = 2; changed = true; }
         }
-        else if (agents[i] == 1) {         // Y
-          if (u < s * dt) { agents[i] = 2; continue; }
+        else if (agents[i] == 1) {
+          if (u < s * dt) { agents[i] = 2; changed = true; }
         }
 
-        // ---------- парное взаимодействие ----------
+        if (changed) continue; // ≈сли уже изменилс€, пропускаем парное взаимодействие
+
+        // 2. ѕарные взаимодействи€
         int j = gen() % N;
         if (j == i) continue;
 
         int a = agents[i];
         int b = agents[j];
+        double u2 = U(gen);
 
-        // Z + Y ? Y
-        if (a == 0 && b == 1 && U(gen) < p * dt) {
-          agents[i] = 1;
-        }
-
-        // Y + V ? V
-        else if (a == 1 && b == 2 && U(gen) < q * dt) {
-          agents[i] = 2;
-        }
-
-        // V + Z ? Z   (c z? v)
-        else if (a == 2 && b == 0 && U(gen) < c * z * dt) {
-          agents[i] = 0;
-        }
-
-        // V + Y ? Y   (c y z v)
-        else if (a == 2 && b == 1 && U(gen) < c * z * dt) {
-          agents[i] = 1;
-        }
+        if (a == 0 && b == 1 && u2 < p * dt) agents[i] = 1;
+        else if (a == 1 && b == 2 && u2 < q * dt) agents[i] = 2;
+        else if (a == 2 && b == 0 && u2 < c * z * dt) agents[i] = 0;
+        else if (a == 2 && b == 1 && u2 < c * z * dt) agents[i] = 1;
       }
 
       save_counts(t);

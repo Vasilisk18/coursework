@@ -14,15 +14,15 @@ class CompModel3 {
 
 public:
   CompModel3() {
-    N = 1;
+    N = 100;
     z0 = 0;
     y0 = 0.0;
     T = 1;
     c = r = p = s = q = 0.0;
 
     result.resize(T * 3);
-    result[0] = static_cast<int>(round(z0));
-    result[1] = static_cast<int>(round(y0));
+    result[0] = static_cast<int>(z0);
+    result[1] = static_cast<int>(y0);
     result[2] = N - result[0] - result[1];
   }
 
@@ -39,8 +39,8 @@ public:
     q = q_;
 
     result.resize(T * 3);
-    result[0] = static_cast<int>(round(z0));
-    result[1] = static_cast<int>(round(y0));
+    result[0] = static_cast<int>(z0);
+    result[1] = static_cast<int>(y0);
     result[2] = N - result[0] - result[1];
   }
 
@@ -52,15 +52,15 @@ public:
 
     std::vector<double> dz(2, 0.0);
 
-    dz[0] = c * z * z * v / (N * N)
-      - r * z
-      - p * z * y / N
+    dz[0] = c * z * z * v
+      - r * z 
+      - p * z * y
       - s * z;
 
-    dz[1] = c * y * z * v / (N * N)
+    dz[1] = c * y * z * v
       + r * z
-      + p * z * y / N
-      - q * v * y / N
+      + p * z * y
+      - q * v * y
       - s * y;
 
 
@@ -102,8 +102,8 @@ public:
     for (int t = 1; t < T; ++t) {
       z = rk4_step(z, dt);
 
-      int zi = static_cast<int>(round(z[0]));
-      int yi = static_cast<int>(round(z[1]));
+      int zi = static_cast<int>(z[0]);
+      int yi = static_cast<int>(z[1]);
       int vi = N - zi - yi;
 
       if (vi < 0) vi = 0;
